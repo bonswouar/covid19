@@ -1,0 +1,40 @@
+<html>
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript">
+
+    $.getJSON( "{{path('evolution-cases')}}", function( jsonData ) {
+      google.charts.load('current', {'packages':['line']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+
+            var data = new google.visualization.DataTable();
+            // data.addColumn('number', 'Day');
+            for (var i = 0; i < jsonData.countries.length; i++){
+              data.addColumn('number', jsonData.countries[i]);
+            }
+            console.log(data);
+            data.addRows(jsonData.data);
+
+            var options = {
+              chart: {
+                title: 'Country by country : How coronavirus trajectories compare.',
+                subtitle: 'stating at the 100th case, last update '+jsonData.info.last_update
+              },
+              width: 1700,
+              height: 1100
+            };
+
+            var chart = new google.charts.Line(document.getElementById('linechart_material'));
+
+            chart.draw(data, google.charts.Line.convertOptions(options));
+          }
+    });
+  </script>
+</head>
+<body>
+  <div id="linechart_material" style="width: 1500px; height: 1500px"></div>
+</body>
+</html>
