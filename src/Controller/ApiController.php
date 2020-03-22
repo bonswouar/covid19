@@ -6,12 +6,17 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 use App\Service\EcdcParser;
 use App\Entity\Cases;
 use App\Entity\Country;
 use App\Entity\Config;
+use App\Normalizer\EvolutionCasesNormalizer;
+use App\Normalizer\EvolutionDeathsNormalizer;
 
 /**
  * @Route("/api")
@@ -40,53 +45,59 @@ class ApiController extends AbstractController
         return JsonResponse::fromJsonString($data);
     }
 
+    private function getCountryCodes($request)
+    {
+        if ($request->query->get('countries')) {
+            $countryCodes = json_decode($request->query->get('countries'));
+            $countryCodes = array_slice($countryCodes, 0, $this->maxCountries);
+        } else {
+            return null;
+        }
+
+        return $countryCodes;
+    }
+
     /**
      * @Route("/evolution/cases", name="evolution-cases")
      */
-    public function evolutionCases(EcdcParser $ecdcParser, EntityManagerInterface $em, SerializerInterface $serializer)
+    public function evolutionCases(EcdcParser $ecdcParser, EntityManagerInterface $em, Request $request)
     {
-        $dataCountry = [];
-        $minCases = 100;
-        $maxCountries = 30;
-        $countries = $em->getRepository(Country::class)->findIfCaseRank($minCases, $maxCountries);
-        foreach ($countries as $country) {
-            $dataCountry[$country["name"]] = [];
-            $cases = $em->getRepository(Cases::class)->findByCountry($em->getReference(Country::class, ($country["id"])));
-            $totalCases = 0;
-            $days = 0;
-            foreach ($cases as $case) {
-                $totalCases += $case->getCases();
-                if ($totalCases >= $minCases) {
-                    $dataCountry[$country["name"]][$days++] = $totalCases;
-                }
+        $this->maxCountries = $this->getParameter('app.graph_max_countries');;
+        $minCases = $request->query->get('min') ?: 100;
+        $countryCodes = $this->getCountryCodes($request);
+        if (!$countryCodes) {
+            $countries = $em->getRepository(Country::class)->findIfCaseRank($minCases, $this->maxCountries);
+            $countryCodes = [];
+            foreach ($countries as $country) {
+                $countryCodes[] = $country["code"];
             }
         }
+        $cases = $em->getRepository(Cases::class)->findByCountries($countryCodes);
+        $serializer = new Serializer([new EvolutionCasesNormalizer()]);
+        $data = $serializer->normalize($cases, null, ["minCases" => $minCases]);
+        $data["last_update"] = $em->getRepository(Config::class)->findOneByParam(Config::PARAM_LAST_UPDATE)->getValue();
+        return new JsonResponse($data);
+    }
 
-        $countryKeys = ["days"];
-        $data = [];
-        $hasOneCountry = true;
-        $day = 0;
-        while ($hasOneCountry) {
-            $hasOneCountry = false;
-            $data[$day] = [$day];
-            $key = 0;
-            foreach ($dataCountry as $country => $dataDays) {
-                if ($day == 0) {
-                    $countryKeys[] = $country;
-                }
-                if (isset($dataDays[$day])) {
-                    $hasOneCountry = true;
-                    $data[$day][$key + 1] = $dataDays[$day];
-                } else {
-                    $data[$day][$key + 1] = null;
-                }
-                $key++;
+    /**
+     * @Route("/evolution/deaths", name="evolution-deaths")
+     */
+    public function evolutionDeaths(EcdcParser $ecdcParser, EntityManagerInterface $em, Request $request)
+    {
+        $this->maxCountries = $this->getParameter('app.graph_max_countries');;
+        $minDeaths = $request->query->get('min') ?: 100;
+        $countryCodes = $this->getCountryCodes($request);
+        if (!$countryCodes) {
+            $countries = $em->getRepository(Country::class)->findIfCaseRank($minDeaths, $this->maxCountries);
+            $countryCodes = [];
+            foreach ($countries as $country) {
+                $countryCodes[] = $country["code"];
             }
-            $day++;
         }
-
-        $lastUpdate = $em->getRepository(Config::class)->findOneByParam(Config::PARAM_LAST_UPDATE);
-
-        return new JsonResponse(["countries" => $countryKeys, "data" => $data, "info" => ["last_update" => $lastUpdate->getValue()] ]);
+        $cases = $em->getRepository(Cases::class)->findByCountries($countryCodes);
+        $serializer = new Serializer([new EvolutionDeathsNormalizer()]);
+        $data = $serializer->normalize($cases, null, ["minDeaths" => $minDeaths]);
+        $data["last_update"] = $em->getRepository(Config::class)->findOneByParam(Config::PARAM_LAST_UPDATE)->getValue();
+        return new JsonResponse($data);
     }
 }

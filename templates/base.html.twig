@@ -2,11 +2,16 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
+        <title>{% block title %}Covid-19 Charts{% endblock %}</title>
+        <link rel="stylesheet" href="{{asset('css/normalize.css')}}">
+        <link rel="stylesheet" href="{{asset('css/skeleton.css')}}">
+        <link rel="stylesheet" href="{{asset('css/main.css')}}">
+        {% block head %}{% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
+        <div class="container">
+            {% block body %}{% endblock %}
+        </div>
         {% block javascripts %}{% endblock %}
     </body>
 </html>

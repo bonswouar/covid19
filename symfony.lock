@@ -126,6 +126,9 @@
     "psr/simple-cache": {
         "version": "1.0.1"
     },
+    "symfony/asset": {
+        "version": "v5.0.5"
+    },
     "symfony/cache": {
         "version": "v5.0.5"
     },
