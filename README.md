@@ -41,7 +41,8 @@ You can add this command to a CRON to update every day.
 For now I've just added one, you can try it from the base url of your webserver previously configured *(for example http://127.0.0.1:8080/)*
 
 Should look like this :
-![screenshot](https://user-images.githubusercontent.com/615053/77235504-7935a480-6bb6-11ea-8ac2-4b168f4ae162.png)
+![Screenshot_2020-03-22 Covid-19 Charts](https://user-images.githubusercontent.com/615053/77256846-f7568180-6c70-11ea-8772-2c70a21c5144.png)
+![Screenshot_2020-03-22 Covid-19 Charts(1)](https://user-images.githubusercontent.com/615053/77256848-f7ef1800-6c70-11ea-8561-2560a70e97ab.png)
 
 You can add more countries or start from something else than the 100th case, by setting `$minCases`and `$maxCountries` in `ApiController.php`. I'll do something cleaner / more user-friendly later, maybe.
 
