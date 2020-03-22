@@ -67,4 +67,4 @@ Datas from ECDC, the European Centre for Disease Prevention and Control *(more a
 
 You can find the XLSX file here : https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide
 
-Using [Google Charts](https://developers-dot-devsite-v2-prod.appspot.com/chart/interactive/docs/gallery/linechart) for the one chart, and [Skeleton](https://skeleton-framework.github.io/) for the basic template.
+Using [Google Charts](https://developers-dot-devsite-v2-prod.appspot.com/chart/interactive/docs/gallery/linechart) for the one chart, and [Skeleton](https://skeleton-framework.github.io/) + [Select2](https://select2.org/) for the basic template.
