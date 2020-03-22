@@ -1,7 +1,10 @@
-<html>
-<head>
+{% extends 'base.html.twig' %}
+
+{% block head %}
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+{% endblock %}
+{% block javascripts %}
   <script type="text/javascript">
 
     $.getJSON( "{{path('evolution-cases')}}", function( jsonData ) {
@@ -9,19 +12,17 @@
       google.charts.setOnLoadCallback(drawChart);
 
       function drawChart() {
-
             var data = new google.visualization.DataTable();
             // data.addColumn('number', 'Day');
-            for (var i = 0; i < jsonData.countries.length; i++){
-              data.addColumn('number', jsonData.countries[i]);
+            for (var i = 0; i < jsonData.header.length; i++){
+              data.addColumn('number', jsonData.header[i]);
             }
-            console.log(data);
             data.addRows(jsonData.data);
 
             var options = {
               chart: {
-                title: 'Country by country : How coronavirus trajectories compare.',
-                subtitle: 'stating at the 100th case, last update '+jsonData.info.last_update
+                title: 'Country by country : How coronavirus cases trajectories compare.',
+                subtitle: 'stating at the 100th case, last update '+jsonData.last_update
               },
               width: 1700,
               height: 1100
@@ -33,8 +34,8 @@
           }
     });
   </script>
-</head>
-<body>
+{% endblock %}
+
+{% block body %}
   <div id="linechart_material" style="width: 1500px; height: 1500px"></div>
-</body>
-</html>
+{% endblock %}

@@ -44,6 +44,7 @@ class CasesRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('d')
             ->join('d.country', 'c')
+            ->orderBy('d.date', 'ASC')
             ->where('c.id IN (:countries)')
             ->setParameters(['countries' => $countries])
             ->getQuery()

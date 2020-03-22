@@ -6,12 +6,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 use App\Service\EcdcParser;
 use App\Entity\Cases;
 use App\Entity\Country;
 use App\Entity\Config;
+use App\Normalizer\EvolutionCasesNormalizer;
 
 /**
  * @Route("/api")
@@ -45,48 +47,15 @@ class ApiController extends AbstractController
      */
     public function evolutionCases(EcdcParser $ecdcParser, EntityManagerInterface $em, SerializerInterface $serializer)
     {
-        $dataCountry = [];
         $minCases = 100;
         $maxCountries = 30;
         $countries = $em->getRepository(Country::class)->findIfCaseRank($minCases, $maxCountries);
-        foreach ($countries as $country) {
-            $dataCountry[$country["name"]] = [];
-            $cases = $em->getRepository(Cases::class)->findByCountry($em->getReference(Country::class, ($country["id"])));
-            $totalCases = 0;
-            $days = 0;
-            foreach ($cases as $case) {
-                $totalCases += $case->getCases();
-                if ($totalCases >= $minCases) {
-                    $dataCountry[$country["name"]][$days++] = $totalCases;
-                }
-            }
-        }
+        $cases = $em->getRepository(Cases::class)->findByCountries($countries);
 
-        $countryKeys = ["days"];
-        $data = [];
-        $hasOneCountry = true;
-        $day = 0;
-        while ($hasOneCountry) {
-            $hasOneCountry = false;
-            $data[$day] = [$day];
-            $key = 0;
-            foreach ($dataCountry as $country => $dataDays) {
-                if ($day == 0) {
-                    $countryKeys[] = $country;
-                }
-                if (isset($dataDays[$day])) {
-                    $hasOneCountry = true;
-                    $data[$day][$key + 1] = $dataDays[$day];
-                } else {
-                    $data[$day][$key + 1] = null;
-                }
-                $key++;
-            }
-            $day++;
-        }
-
+        $data = $serializer->normalize($cases, null, ["minCases" => $minCases]);
         $lastUpdate = $em->getRepository(Config::class)->findOneByParam(Config::PARAM_LAST_UPDATE);
+        $data["last_update"] = $lastUpdate->getValue();
 
-        return new JsonResponse(["countries" => $countryKeys, "data" => $data, "info" => ["last_update" => $lastUpdate->getValue()] ]);
+        return new JsonResponse($data);
     }
 }
