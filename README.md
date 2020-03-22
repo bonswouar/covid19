@@ -50,9 +50,6 @@ Should look like this :
 
 ![Screenshot_2020-03-22 Covid-19 Charts](https://user-images.githubusercontent.com/615053/77256846-f7568180-6c70-11ea-8772-2c70a21c5144.png)
 
-
-You can add more countries or start from something else than the 100th case, by setting `$minCases`and `$maxCountries` in `ApiController.php`. I'll do something cleaner / more user-friendly later, maybe.
-
 ## TODO
 
 - [ ] Clean code
