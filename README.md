@@ -58,7 +58,7 @@ You can add more countries or start from something else than the 100th case, by 
 - [ ] Clean code
 - [ ] More API endpoint examples
 - [ ] More charts examples
-- [ ] Dynamic charts with custom params
+- [x] Dynamic charts with custom params
 
 ## CONTRIBUTING
 
