@@ -29,6 +29,16 @@ class CountryRepository extends ServiceEntityRepository
         ;
     }
 
+    public function findByCodes(array $codes)
+    {
+        return $this->createQueryBuilder('d')
+            ->where('c.code IN (:countries)')
+            ->setParameters(['countries' => $countries])
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     public function findIfCaseRank($casesMin, $maxCountries)
     {
         $result = $this->createQueryBuilder('c')
@@ -43,11 +53,22 @@ class CountryRepository extends ServiceEntityRepository
             ->getResult()
         ;
         return $result;
-        // $ids = [];
-        // foreach ($result as $case) {
-        //     $ids[] = $case["id"];
-        // }
-        // return $ids;
+    }
+
+    public function findIfDeathRank($deathsMin, $maxCountries)
+    {
+        $result = $this->createQueryBuilder('c')
+            ->select( 'c.id, c.code, c.name, c.disabled, SUM(d.deaths) as totalDeaths')
+            ->orderBy('totalDeaths', 'desc')
+            ->join('c.cases', 'd')
+            ->groupBy('c.id')
+            ->having('totalDeaths >= :deathsMin and c.disabled != 1')
+            ->setParameters(['deathsMin' => $deathsMin])
+            ->setMaxResults($maxCountries)
+            ->getQuery()
+            ->getResult()
+        ;
+        return $result;
     }
 
     // /**

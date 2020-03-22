@@ -7,26 +7,26 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 use App\Entity\Cases;
 
-class EvolutionCasesNormalizer implements ContextAwareNormalizerInterface
+class EvolutionDeathsNormalizer implements ContextAwareNormalizerInterface
 {
     private $normalizer;
 
     public function normalize($cases, $format = null, array $context = [])
     {
-        $minCases = isset($context["minCases"]) ? $context["minCases"] : 100;
+        $minDeaths = isset($context["minDeaths"]) ? $context["minDeaths"] : 10;
         $dataCountry = [];
         $countryStartDates = [];
         $countryTotalCases = [];
         $nbDaysMax = 0;
 
-        // Progressive sum of total cases per country, starting at minCases
+        // Progressive sum of total cases per country, starting at minDeaths
         foreach ($cases as $case) {
             $country = $case->getCountry();
             if (!isset($countryTotalCases[$case->getCountry()->getName()])) {
                 $countryTotalCases[$country->getName()] = 0;
             }
-            $countryTotalCases[$country->getName()] += $case->getCases();
-            if ($countryTotalCases[$country->getName()] >= $minCases) {
+            $countryTotalCases[$country->getName()] += $case->getDeaths();
+            if ($countryTotalCases[$country->getName()] >= $minDeaths) {
                 if (!isset($dataCountry[$case->getCountry()->getName()])) {
                     $countryStartDates[$country->getCode()] = $case->getDate();
                 }
@@ -58,7 +58,7 @@ class EvolutionCasesNormalizer implements ContextAwareNormalizerInterface
             }
         }
         // Header for Chart
-        $header = array_merge(["Number of days after the ".$minCases."th case"], array_keys($dataCountry));
+        $header = array_merge(["Number of days after the ".$minDeaths."th death"], array_keys($dataCountry));
 
         return ["header" => $header, "data" => $data, "countries" => array_keys($countryStartDates)];
     }

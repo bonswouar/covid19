@@ -3,29 +3,53 @@
 {% block head %}
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
 {% endblock %}
 {% block javascripts %}
   <script type="text/javascript">
+  function updateChart(type, minCases, countries) {
+    if (typeof type === 'undefined') {
+      type = "case";
+    }
+    if (typeof minCases === 'undefined') {
+      minCases = 100;
+    }
+    if (typeof countries === 'undefined') {
+      countries = [];
+    }
+    if (type == "case") {
+      url = "{{path('evolution-cases')}}";
+    } else if (type == "death") {
+      url = "{{path('evolution-deaths')}}";
+    }
 
-    $.getJSON( "{{path('evolution-cases')}}", function( jsonData ) {
+    url += "?min="+minCases+"&countries="+(encodeURIComponent(JSON.stringify(countries)));
+
+    $.getJSON( url, function( jsonData ) {
       google.charts.load('current', {'packages':['line']});
       google.charts.setOnLoadCallback(drawChart);
 
       function drawChart() {
             var data = new google.visualization.DataTable();
-            // data.addColumn('number', 'Day');
             for (var i = 0; i < jsonData.header.length; i++){
               data.addColumn('number', jsonData.header[i]);
             }
+            $("#countries option:selected").prop("selected", false);
+            $('#countries').trigger('change.select2');
+            for (var i = 0; i < jsonData.countries.length; i++) {
+              $('#countries option[value="'+jsonData.countries[i]+'"]').prop("selected", true);
+            }
+            $('#countries').trigger('change.select2');
             data.addRows(jsonData.data);
 
             var options = {
               chart: {
-                title: 'Country by country : How coronavirus cases trajectories compare.',
-                subtitle: 'stating at the 100th case, last update '+jsonData.last_update
+                title: 'Country by country : How coronavirus '+type+' trajectories compare.',
+                subtitle: 'stating at the '+minCases+'th '+type+', last update '+jsonData.last_update
               },
-              width: 1700,
-              height: 1100
+              width: 1200,
+              height: 900
             };
 
             var chart = new google.charts.Line(document.getElementById('linechart_material'));
@@ -33,9 +57,77 @@
             chart.draw(data, google.charts.Line.convertOptions(options));
           }
     });
+  }
+  $.getJSON( "{{path('countries')}}", function( jsonData ) {
+    for (var i = 0; i < jsonData.length; i++){
+        $('#countries').append(new Option(jsonData[i].name, jsonData[i].code));
+      }
+      $('#countries').select2({allowClear: true});
+      updateChart();
+  });
+  updateForm();
+  $("input[name='indicator-type']").on("change", function() {
+    updateForm();
+  });
+
+  function updateForm() {
+    var indicatorType = $("input[name='indicator-type']:checked").val();
+    $("#min-label-type").text(indicatorType);
+    if (indicatorType == "case") {
+      $("#min").val("100");
+    } else {
+      $("#min").val("10");
+    }
+  }
+
+  function refresh() {
+    var indicatorType = $("input[name='indicator-type']:checked").val();
+    var minCases = $("#min").val();
+    var countries = $('#countries option:selected');
+    var countryCodes = [];
+    for (var i = 0; i < countries.length; i++) {
+      countryCodes.push(countries[i].value);
+    }
+    updateChart(indicatorType, minCases, countryCodes);
+    return false;
+  }
   </script>
 {% endblock %}
 
 {% block body %}
-  <div id="linechart_material" style="width: 1500px; height: 1500px"></div>
+  <div class="row">
+  <h1>Covid-19 Charts</h1>
+  <form>
+  <div class="row">
+    <div class="six columns">
+      <label for="type">Show</label>
+      <div class="row">
+      <div class="six columns">
+        <input type="radio" name="indicator-type" value="case" checked=checked> Cases</input>
+      </div>
+      <div class="six columns">
+        <input type="radio" name="indicator-type" value="death"> Deaths</input>
+      </div>
+    </div>
+    <div class="row">
+    <label id="label-min" for="min">Starting at <span id="min-label-type">case</span> :
+      <input id="min" type="number" value="100">
+    </label>
+  </div>
+  <div class="row">
+    <input class="button-primary" type="submit" value="Submit" onclick="return refresh();">
+  </div>
+</div>
+    <div class="six columns">
+      <label for="exampleRecipientInput">Countries</label>
+      <select class="u-full-width" id="countries" multiple=true>
+      </select>
+    </div>
+  </div>
+</form>
+
+  </div>
+  <div class="row">
+    <div class="one colun" id="linechart_material"></div>
+  </div>
 {% endblock %}
