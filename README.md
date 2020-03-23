@@ -6,6 +6,8 @@ This is just a quick project I made because I couldn't find any (free) vizualisa
 
 Totally inspired by "Country by country : How coronavirus cases trajectories compare" by the Financial Times.
 
+Demo is here : (https://covid19.drhugs.com/)
+
 ## REQUIREMENT
 
 - PHP 7.2.5 or higher and these PHP extensions (which are installed and enabled by default in most PHP 7 installations): Ctype, iconv, JSON, PCRE, Session, SimpleXML, and Tokenizer, Curl
