@@ -11,6 +11,16 @@
     <body>
         <div class="container">
             {% block body %}{% endblock %}
+            <div class="footer">
+                <div class="row">
+                    <div class="six columns">
+                        <span>Source : <a href="https://github.com/bonswouar/covid19">https://github.com/bonswouar/covid19</a></span>
+                    </div>
+                    <div class="six columns">
+                        <h6>Datas from <a href="https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide">ECDC</a></h6>
+                    </div>
+                </div>
+            </div>
         </div>
         {% block javascripts %}{% endblock %}
     </body>
