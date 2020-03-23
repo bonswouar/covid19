@@ -44,11 +44,12 @@ Should look like this :
 
 <p align="center">Cases, starting at the 100th, with 30 countries</p>
 
-![Screenshot_2020-03-22 Covid-19 Charts(1)](https://user-images.githubusercontent.com/615053/77256848-f7ef1800-6c70-11ea-8561-2560a70e97ab.png)
+
+![Screenshot_2020-03-23 Covid-19 Charts](https://user-images.githubusercontent.com/615053/77332071-d8fc8e80-6d21-11ea-865e-51a5380989ae.png)
 
 <p align="center">Deaths, starting at the 10th, with 4 countries</p>
 
-![Screenshot_2020-03-22 Covid-19 Charts](https://user-images.githubusercontent.com/615053/77256846-f7568180-6c70-11ea-8772-2c70a21c5144.png)
+![Screenshot_2020-03-23 Covid-19 Charts2](https://user-images.githubusercontent.com/615053/77332072-d9952500-6d21-11ea-92dd-52dce4e1d6fc.png)
 
 ## TODO
 
@@ -67,4 +68,4 @@ Datas from ECDC, the European Centre for Disease Prevention and Control *(more a
 
 You can find the XLSX file here : https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide
 
-Using [Google Charts](https://developers-dot-devsite-v2-prod.appspot.com/chart/interactive/docs/gallery/linechart) for the one chart, and [Skeleton](https://skeleton-framework.github.io/) + [Select2](https://select2.org/) for the basic template.
+Using [Google Charts](https://developers-dot-devsite-v2-prod.appspot.com/chart/interactive/docs/gallery/linechart) for the one chart, and [Skeleton](https://skeleton-framework.github.io/) + [Chosen](https://harvesthq.github.io/chosen/) for the basic template.
