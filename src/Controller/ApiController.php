@@ -65,7 +65,7 @@ class ApiController extends AbstractController
         $this->maxCountries = $this->getParameter('app.graph_max_countries');;
         $minCases = $request->query->get('min') ?: 100;
         $countryCodes = $this->getCountryCodes($request);
-        if (!$countryCodes) {
+        if (!$countryCodes || !count($countryCodes)) {
             $countries = $em->getRepository(Country::class)->findIfCaseRank($minCases, $this->maxCountries);
             $countryCodes = [];
             foreach ($countries as $country) {
@@ -87,7 +87,7 @@ class ApiController extends AbstractController
         $this->maxCountries = $this->getParameter('app.graph_max_countries');;
         $minDeaths = $request->query->get('min') ?: 100;
         $countryCodes = $this->getCountryCodes($request);
-        if (!$countryCodes) {
+        if (!$countryCodes || !count($countryCodes)) {
             $countries = $em->getRepository(Country::class)->findIfCaseRank($minDeaths, $this->maxCountries);
             $countryCodes = [];
             foreach ($countries as $country) {
