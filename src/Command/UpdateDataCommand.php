@@ -85,7 +85,7 @@ class UpdateDataCommand extends Command
             $date->modify('-1 day');
         }
         if (!$this->shouldUpdate($input->getOption("force"), $input->getOption("clear"), $date)) {
-            $io->error('Datas already updated with last available document ('.$date->format("d/m/Y").').');
+            $io->text('Datas already updated with last available document ('.$date->format("d/m/Y").').');
             return 0;
         }
         $io->text("File saved.");
