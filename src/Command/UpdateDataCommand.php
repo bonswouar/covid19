@@ -80,7 +80,7 @@ class UpdateDataCommand extends Command
         $io->title('Retrieve .xlsx file from ECDC website');
 
         $date = new \DateTime("today");
-        $date->setTime(0,0,0);
+        $date->setTime(0, 0, 0);
         while (!$this->ecdcParser->getXlsx($date)) {
             $date->modify('-1 day');
         }

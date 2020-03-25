@@ -126,7 +126,7 @@ class EcdcParser
             } else {
                 $country = $this->getCountry($row[$headers["countryCode"]], $row[$headers["country"]]);
                 $date = \DateTime::createFromFormat(self::CONFIG_DATE_FORMAT, $row[$headers["date"]]);
-                $date->setTime(0,0,0);
+                $date->setTime(0, 0, 0);
                 $cases = $this->updateCases(abs($row[$headers["cases"]]), abs($row[$headers["deaths"]]), $date, $country);
                 if ($cases) {
                     $this->em->persist($cases);

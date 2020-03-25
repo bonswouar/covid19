@@ -42,7 +42,7 @@ class CountryRepository extends ServiceEntityRepository
     public function findIfCaseRank($casesMin, $maxCountries)
     {
         $result = $this->createQueryBuilder('c')
-            ->select( 'c.id, c.code, c.name, c.disabled, SUM(d.cases) as totalCases')
+            ->select('c.id, c.code, c.name, c.disabled, SUM(d.cases) as totalCases')
             ->orderBy('totalCases', 'desc')
             ->join('c.cases', 'd')
             ->groupBy('c.id')
@@ -58,7 +58,7 @@ class CountryRepository extends ServiceEntityRepository
     public function findIfDeathRank($deathsMin, $maxCountries)
     {
         $result = $this->createQueryBuilder('c')
-            ->select( 'c.id, c.code, c.name, c.disabled, SUM(d.deaths) as totalDeaths')
+            ->select('c.id, c.code, c.name, c.disabled, SUM(d.deaths) as totalDeaths')
             ->orderBy('totalDeaths', 'desc')
             ->join('c.cases', 'd')
             ->groupBy('c.id')

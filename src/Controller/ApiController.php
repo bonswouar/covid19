@@ -15,8 +15,7 @@ use App\Service\EcdcParser;
 use App\Entity\Cases;
 use App\Entity\Country;
 use App\Entity\Config;
-use App\Normalizer\EvolutionCasesNormalizer;
-use App\Normalizer\EvolutionDeathsNormalizer;
+use App\Normalizer\EvolutionNormalizer;
 
 /**
  * @Route("/api")
@@ -62,7 +61,7 @@ class ApiController extends AbstractController
      */
     public function evolutionCases(EcdcParser $ecdcParser, EntityManagerInterface $em, Request $request)
     {
-        $this->maxCountries = $this->getParameter('app.graph_max_countries');;
+        $this->maxCountries = $this->getParameter('app.graph_max_countries');
         $minCases = $request->query->get('min') ?: 100;
         $countryCodes = $this->getCountryCodes($request);
         if (!$countryCodes || !count($countryCodes)) {
@@ -73,8 +72,8 @@ class ApiController extends AbstractController
             }
         }
         $cases = $em->getRepository(Cases::class)->findByCountries($countryCodes);
-        $serializer = new Serializer([new EvolutionCasesNormalizer()]);
-        $data = $serializer->normalize($cases, null, ["minCases" => $minCases]);
+        $serializer = new Serializer([new EvolutionNormalizer()]);
+        $data = $serializer->normalize($cases, null, ["min" => $minCases, "property" => "cases"]);
         $data["last_update"] = $em->getRepository(Config::class)->findOneByParam(Config::PARAM_LAST_UPDATE)->getValue();
         return new JsonResponse($data);
     }
@@ -84,7 +83,7 @@ class ApiController extends AbstractController
      */
     public function evolutionDeaths(EcdcParser $ecdcParser, EntityManagerInterface $em, Request $request)
     {
-        $this->maxCountries = $this->getParameter('app.graph_max_countries');;
+        $this->maxCountries = $this->getParameter('app.graph_max_countries');
         $minDeaths = $request->query->get('min') ?: 100;
         $countryCodes = $this->getCountryCodes($request);
         if (!$countryCodes || !count($countryCodes)) {
@@ -95,8 +94,8 @@ class ApiController extends AbstractController
             }
         }
         $cases = $em->getRepository(Cases::class)->findByCountries($countryCodes);
-        $serializer = new Serializer([new EvolutionDeathsNormalizer()]);
-        $data = $serializer->normalize($cases, null, ["minDeaths" => $minDeaths]);
+        $serializer = new Serializer([new EvolutionNormalizer()]);
+        $data = $serializer->normalize($cases, null, ["min" => $minDeaths, "property" => "deaths"]);
         $data["last_update"] = $em->getRepository(Config::class)->findOneByParam(Config::PARAM_LAST_UPDATE)->getValue();
         return new JsonResponse($data);
     }

@@ -12,7 +12,8 @@ class AppController extends AbstractController
      */
     public function index()
     {
-        $maxCountries = $this->getParameter('app.graph_max_countries');;
+        $maxCountries = $this->getParameter('app.graph_max_countries');
+        ;
         return $this->render('index.html.twig', [
             'maxCountries' => $maxCountries
         ]);
