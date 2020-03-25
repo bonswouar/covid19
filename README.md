@@ -54,7 +54,7 @@ Should look like this :
 
 ## TODO
 
-- [ ] Clean code
+- [x] Clean code
 - [ ] More API endpoint examples
 - [ ] More charts examples
 - [x] Dynamic charts with custom params
