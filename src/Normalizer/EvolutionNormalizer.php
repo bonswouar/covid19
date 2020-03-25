@@ -4,29 +4,32 @@ namespace App\Normalizer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\ContextAwareNormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 
 use App\Entity\Cases;
 
-class EvolutionCasesNormalizer implements ContextAwareNormalizerInterface
+class EvolutionNormalizer implements ContextAwareNormalizerInterface
 {
     private $normalizer;
 
     public function normalize($cases, $format = null, array $context = [])
     {
-        $minCases = isset($context["minCases"]) ? $context["minCases"] : 100;
+        $min = isset($context["min"]) ? $context["min"] : 100;
+        $property = isset($context["property"]) ? $context["property"] : "cases";
+        $propertyAccessor = PropertyAccess::createPropertyAccessor();
         $dataCountry = [];
         $countryStartDates = [];
-        $countryTotalCases = [];
+        $countryTotal = [];
         $nbDaysMax = 0;
 
         // Progressive sum of total cases per country, starting at minCases
         foreach ($cases as $case) {
             $country = $case->getCountry();
-            if (!isset($countryTotalCases[$case->getCountry()->getName()])) {
-                $countryTotalCases[$country->getName()] = 0;
+            if (!isset($countryTotal[$case->getCountry()->getName()])) {
+                $countryTotal[$country->getName()] = 0;
             }
-            $countryTotalCases[$country->getName()] += $case->getCases();
-            if ($countryTotalCases[$country->getName()] >= $minCases) {
+            $countryTotal[$country->getName()] += $propertyAccessor->getValue($case, $property);
+            if ($countryTotal[$country->getName()] >= $min) {
                 if (!isset($dataCountry[$case->getCountry()->getName()])) {
                     $countryStartDates[$country->getCode()] = $case->getDate();
                 }
@@ -34,7 +37,7 @@ class EvolutionCasesNormalizer implements ContextAwareNormalizerInterface
                 if ($nbDays > $nbDaysMax) {
                     $nbDaysMax = $nbDays;
                 }
-                $dataCountry[$country->getName()][$nbDays] = $countryTotalCases[$country->getName()];
+                $dataCountry[$country->getName()][$nbDays] = $countryTotal[$country->getName()];
             }
         }
 
@@ -58,7 +61,7 @@ class EvolutionCasesNormalizer implements ContextAwareNormalizerInterface
             }
         }
         // Header for Chart
-        $header = array_merge(["Number of days after the ".$minCases."th case"], array_keys($dataCountry));
+        $header = array_merge(["Number of days after the ".$min."th ".(substr($property, 0, -1))], array_keys($dataCountry));
 
         return ["header" => $header, "data" => $data, "countries" => array_keys($countryStartDates)];
     }

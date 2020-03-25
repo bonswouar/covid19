@@ -6,7 +6,7 @@ This is just a quick project I made because I couldn't find any (free) vizualisa
 
 Totally inspired by "Country by country : How coronavirus cases trajectories compare" by the Financial Times.
 
-**Demo is here : https://covid19.drhugs.com/**
+**Live demo here : https://covid19.drhugs.com/**
 
 ## REQUIREMENT
 
