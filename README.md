@@ -46,12 +46,11 @@ Should look like this :
 
 <p align="center">Cases, starting at the 100th, with 30 countries</p>
 
-
-![Screenshot_2020-03-23 Covid-19 Charts](https://user-images.githubusercontent.com/615053/77332071-d8fc8e80-6d21-11ea-865e-51a5380989ae.png)
+![Screenshot_2020-03-25 Covid-19 Charts](https://user-images.githubusercontent.com/615053/77552238-910d7100-6eb3-11ea-9a24-f4ea5fee24a0.png)
 
 <p align="center">Deaths, starting at the 10th, with 4 countries</p>
 
-![Screenshot_2020-03-23 Covid-19 Charts2](https://user-images.githubusercontent.com/615053/77332072-d9952500-6d21-11ea-92dd-52dce4e1d6fc.png)
+![Screenshot_2020-03-25 Covid-19 Charts(1)](https://user-images.githubusercontent.com/615053/77552241-91a60780-6eb3-11ea-993a-4de45c18e522.png)
 
 ## TODO
 
