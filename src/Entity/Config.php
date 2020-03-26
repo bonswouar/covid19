@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
 class Config
 {
     const PARAM_LAST_UPDATE = "last_update";
-    const PARAM_LAST_UPDATE_DATE_FORMAT = "d/m/Y";
-    
+    const PARAM_LAST_UPDATE_DATE_FORMAT = "Y-m-d";
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
