@@ -41,29 +41,23 @@ class EvolutionNormalizer implements ContextAwareNormalizerInterface
             }
         }
 
-        // Order by day and country
+        // Order by country and by day
         $data = [];
-        $hasAtLeastOneCountry = true;
         $day = 0;
         for ($day=0; $day <= $nbDaysMax ; $day++) {
-            $hasOneCountry = false;
-            // First col is the day number
-            $data[$day] = [$day];
-            $countryKey = 0;
             foreach ($dataCountry as $country => $dataDays) {
-                if (isset($dataDays[$day])) {
-                    $hasOneCountry = true;
-                    $data[$day][$countryKey + 1] = $dataDays[$day];
-                } else {
-                    $data[$day][$countryKey + 1] = null;
+                if (!isset($data[$country])) {
+                    $data[$country] = [];
                 }
-                $countryKey++;
+                if (isset($dataDays[$day])) {
+                    $data[$country][$day] = $dataDays[$day];
+                }
             }
         }
         // Header for Chart
         $header = array_merge(["Number of days after the ".$min."th ".(substr($property, 0, -1))], array_keys($dataCountry));
 
-        return ["header" => $header, "data" => $data, "countries" => array_keys($countryStartDates)];
+        return ["header" => $header, "data" => $data, "countries" => array_keys($countryStartDates), "nbDays" => $day];
     }
 
     public function supportsNormalization($data, $format = null, array $context = [])

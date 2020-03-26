@@ -2,13 +2,16 @@
 
 {% block head %}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-colorschemes"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
 {% endblock %}
 
 {% block javascripts %}
     <script type="text/javascript">
+    var chart;
     function updateChart(type, minCases, countries) {
         if (typeof type === 'undefined') {
             type = "case";
@@ -28,40 +31,63 @@
         url += "?min="+minCases+"&countries="+(encodeURIComponent(JSON.stringify(countries)));
 
         $.getJSON( url, function( jsonData ) {
-            google.charts.load('current', {'packages':['line']});
-            google.charts.setOnLoadCallback(drawChart);
-
-            function drawChart() {
-                var data = new google.visualization.DataTable();
-                for (var i = 0; i < jsonData.header.length; i++){
-                    data.addColumn('number', jsonData.header[i]);
-                }
-                $("#countries option:selected").prop("selected", false);
-                $("#countries").trigger("chosen:updated");
-                for (var i = 0; i < jsonData.countries.length; i++) {
-                    $('#countries option[value="'+jsonData.countries[i]+'"]').prop("selected", true);
-                }
-                $("#countries").trigger("chosen:updated");
-                data.addRows(jsonData.data);
-
-                var options = {
-                    chart: {
-                        title: 'Country by country : How coronavirus '+type+'s trajectories compare.',
-                        subtitle: 'stating at the '+minCases+'th '+type+', last update '+jsonData.last_update
-                    },
-                    width: 1200,
-                    height: 900
-                };
-
-                var chart = new google.charts.Line(document.getElementById('linechart_material'));
-
-                chart.draw(data, google.charts.Line.convertOptions(options));
+            $("#countries option:selected").prop("selected", false);
+            $("#countries").trigger("chosen:updated");
+            for (var i = 0; i < jsonData.countries.length; i++) {
+                $('#countries option[value="'+jsonData.countries[i]+'"]').prop("selected", true);
             }
+            $("#countries").trigger("chosen:updated");
+            var data = [];
+            for (const [key, value] of Object.entries(jsonData.data)) {
+                data.push({label: key.replace(/_/g, ' '), data: value, fill: false});
+            }
+
+            var ctx = document.getElementById('chart').getContext('2d');
+            if (typeof chart !== 'undefined') {
+                chart.destroy();
+            }
+            chart = new Chart(ctx, {
+                type: 'line',
+                label: "testeuh",
+                data: {
+                    labels: Array.from(Array(jsonData.nbDays).keys()),
+                    datasets: data,
+                },
+                options: {
+                    tooltips: {
+                        callbacks: {
+                            title: function(tooltipItem, data) {
+                                return '+' + data.labels[tooltipItem[0].index]  + ' days';
+                            },
+                            label: function(tooltipItem, data) {
+                                var label = data.datasets[tooltipItem.datasetIndex].label;
+                                return label + ': ' + tooltipItem.value + ' ' + type + 's';
+                            },
+                            footer: function(tooltipItem, data) {
+                                if (typeof data.datasets[tooltipItem[0].datasetIndex].data[tooltipItem[0].index - 1] !== 'undefined') {
+                                    var diff = data.datasets[tooltipItem[0].datasetIndex].data[tooltipItem[0].index] - data.datasets[tooltipItem[0].datasetIndex].data[tooltipItem[0].index - 1];
+                                    if (diff) {
+                                        return  diff + ' new ' + type + 's';
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    legend: {
+                        position: 'right',
+                    },
+                    plugins: {
+                        colorschemes: {
+                            scheme: 'tableau.Classic20'
+                        }
+                    }
+                }
+            });
         });
     }
     $.getJSON( "{{path('countries')}}", function( jsonData ) {
         for (var i = 0; i < jsonData.length; i++){
-            $('#countries').append(new Option(jsonData[i].name, jsonData[i].code));
+            $('#countries').append(new Option(jsonData[i].name.replace(/_/g, ' '), jsonData[i].code));
         }
         $("#countries").chosen({max_selected_options: {{maxCountries}}});
         updateChart();
@@ -132,6 +158,6 @@
         </form>
     </div>
     <div class="row">
-        <div class="one colun" id="linechart_material"></div>
+        <canvas id="chart"></canvas>
     </div>
 {% endblock %}
