@@ -44,13 +44,14 @@ For now I've just added one, you can try it from the base url of your webserver 
 
 Should look like this :
 
-<p align="center">Cases, starting at the 100th, with 30 countries</p>
+<p align="center">Cases, starting at the 100th, with 20 countries</p>
 
-![Screenshot_2020-03-25 Covid-19 Charts](https://user-images.githubusercontent.com/615053/77552238-910d7100-6eb3-11ea-9a24-f4ea5fee24a0.png)
+
+![Screenshot_2020-03-26 Covid-19 Charts](https://user-images.githubusercontent.com/615053/77681028-0f8e0f80-6f95-11ea-8e65-d78dec9d5683.png)
 
 <p align="center">Deaths, starting at the 10th, with 4 countries</p>
 
-![Screenshot_2020-03-25 Covid-19 Charts(1)](https://user-images.githubusercontent.com/615053/77552241-91a60780-6eb3-11ea-993a-4de45c18e522.png)
+![Screenshot_2020-03-26 Covid-19 Charts(1)](https://user-images.githubusercontent.com/615053/77681029-1026a600-6f95-11ea-82f5-c92ed84f3a5f.png)
 
 ## TODO
 
