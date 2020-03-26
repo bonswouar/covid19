@@ -12,23 +12,31 @@
 {% block javascripts %}
     <script type="text/javascript">
     var chart;
-    function updateChart(type, minCases, countries) {
+    function updateChart(type, min, countries) {
+        var type = $("input[name='indicator-type']:checked").val();
+        var min = $("#min").val();
+        var countries = $('#countries option:selected');
+        var countryCodes = [];
+        for (var i = 0; i < countries.length; i++) {
+            countryCodes.push(countries[i].value);
+        }
         if (typeof type === 'undefined') {
             type = "case";
         }
-        if (typeof minCases === 'undefined') {
-            minCases = 100;
+        if (typeof min === 'undefined') {
+            min = 100;
         }
-        if (typeof countries === 'undefined') {
-            countries = [];
+        if (typeof countryCodes === 'undefined') {
+            countryCodes = [];
         }
+
         if (type == "case") {
             url = "{{path('evolution-cases')}}";
         } else if (type == "death") {
             url = "{{path('evolution-deaths')}}";
         }
 
-        url += "?min="+minCases+"&countries="+(encodeURIComponent(JSON.stringify(countries)));
+        url += "?min="+min+"&countries="+(encodeURIComponent(JSON.stringify(countryCodes)));
 
         $.getJSON( url, function( jsonData ) {
             $("#countries option:selected").prop("selected", false);
@@ -37,6 +45,11 @@
                 $('#countries option[value="'+jsonData.countries[i]+'"]').prop("selected", true);
             }
             $("#countries").trigger("chosen:updated");
+
+            $("#span-update").text(jsonData.last_update);
+            $("#span-min").text(min);
+            $(".span-type").text(type);
+
             var data = [];
             for (const [key, value] of Object.entries(jsonData.data)) {
                 data.push({label: key.replace(/_/g, ' '), data: value, fill: false});
@@ -107,17 +120,6 @@
         }
     }
 
-    function refresh() {
-        var indicatorType = $("input[name='indicator-type']:checked").val();
-        var minCases = $("#min").val();
-        var countries = $('#countries option:selected');
-        var countryCodes = [];
-        for (var i = 0; i < countries.length; i++) {
-            countryCodes.push(countries[i].value);
-        }
-        updateChart(indicatorType, minCases, countryCodes);
-    }
-
     function clearCountries() {
         $("#countries option:selected").prop("selected", false);
         $("#countries").trigger("chosen:updated");
@@ -127,7 +129,7 @@
 
 {% block body %}
     <div class="row">
-        <h1>Covid-19 Charts</h1>
+        <h1><strong>Covid-19 Charts</strong></h1>
         <form>
             <div class="row">
                 <div class="six columns">
@@ -146,7 +148,7 @@
                         </label>
                     </div>
                     <div class="row">
-                        <input class="button-primary" type="submit" value="Submit" onclick="refresh();return false;">
+                        <input class="button-primary" type="submit" value="Submit" onclick="updateChart();return false;">
                     </div>
                 </div>
                 <div class="six columns">
@@ -158,6 +160,8 @@
         </form>
     </div>
     <div class="row">
+        <h3><strong>Country by country : How coronavirus <span class="span-type">case</span>s trajectories compare</strong><h3>
         <canvas id="chart"></canvas>
+        <h6 class="u-pull-right"><em>Starting at <span id="span-min">100</span> <span class="span-type">case</span>s | Last update : <strong><span id="span-update"></span></strong></em><h6>
     </div>
 {% endblock %}
