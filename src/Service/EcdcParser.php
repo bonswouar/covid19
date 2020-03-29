@@ -16,11 +16,11 @@ use App\Entity\Cases;
 class EcdcParser
 {
     const HEADERS = [
-        "DateRep"                   => "date",
-        "Cases"                     => "cases",
-        "Deaths"                    => "deaths",
-        "Countries and territories" => "country",
-        "GeoId"                     => "countryCode"
+        "dateRep"                   => "date",
+        "cases"                     => "cases",
+        "deaths"                    => "deaths",
+        "countriesAndTerritories"   => "country",
+        "geoId"                     => "countryCode"
     ];
     const CONFIG_DATE_FORMAT = "m/d/Y";
 
