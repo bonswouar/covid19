@@ -24,7 +24,7 @@
             type = "case";
         }
         if (typeof min === 'undefined') {
-            min = 100;
+            min = {{minCases}};
         }
         if (typeof countryCodes === 'undefined') {
             countryCodes = [];
@@ -114,9 +114,9 @@
         var indicatorType = $("input[name='indicator-type']:checked").val();
         $("#min-label-type").text(indicatorType);
         if (indicatorType == "case") {
-            $("#min").val("100");
+            $("#min").val("{{minCases}}");
         } else {
-            $("#min").val("10");
+            $("#min").val("{{minDeaths}}");
         }
     }
 
@@ -144,7 +144,7 @@
                     </div>
                     <div class="row">
                         <label id="label-min" for="min">Starting at <span id="min-label-type">case</span> :
-                            <input id="min" type="number" value="100">
+                            <input id="min" type="number" value="{{minCases}}">
                         </label>
                     </div>
                     <div class="row">
@@ -162,6 +162,6 @@
     <div class="row">
         <h3><strong>Country by country : How coronavirus <span class="span-type">case</span>s trajectories compare</strong><h3>
         <canvas id="chart"></canvas>
-        <h6 class="u-pull-right"><em>Starting at <span id="span-min">100</span> <span class="span-type">case</span>s | Last update : <strong><span id="span-update"></span></strong></em><h6>
+        <h6 class="u-pull-right"><em>Starting at <span id="span-min">{{minCases}}</span> <span class="span-type">case</span>s | Last update : <strong><span id="span-update"></span></strong></em><h6>
     </div>
 {% endblock %}
