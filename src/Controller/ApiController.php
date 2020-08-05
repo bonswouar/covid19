@@ -23,18 +23,46 @@ use App\Normalizer\EvolutionNormalizer;
 class ApiController extends AbstractController
 {
     /**
-     * @Route("/cases", name="cases")
+     * @Route("/evolution/cases", name="evolution-cases")
+     * Cumulative cases per day
      */
-    public function cases(EcdcParser $ecdcParser, EntityManagerInterface $em, SerializerInterface $serializer)
+    public function evolutionCases(EcdcParser $ecdcParser, EntityManagerInterface $em, Request $request, $minCases)
     {
-        $cases = $em->getRepository(Cases::class)->findAllByDate();
-        $data = $serializer->serialize($cases, 'json', ['groups' => 'api-cases']);
+        $this->maxCountries = $this->getParameter('app.graph_max_countries');
+        $minCases = $request->query->get('min') ?: $minCases;
+        $countryCodes = $this->getCountryCodes($request);
+        if (!$countryCodes || !count($countryCodes)) {
+            $countryCodes = $em->getRepository(Country::class)->getCountryCodesIfCaseRank($minCases, $this->maxCountries);
+        }
+        $cases = $em->getRepository(Cases::class)->findByCountries($countryCodes);
+        $serializer = new Serializer([new EvolutionNormalizer()]);
+        $data = $serializer->normalize($cases, null, ["min" => $minCases, "property" => "cases"]);
+        $data["last_update"] = $em->getRepository(Config::class)->findOneByParam(Config::PARAM_LAST_UPDATE)->getValue();
+        return new JsonResponse($data);
+    }
 
-        return JsonResponse::fromJsonString($data);
+    /**
+     * @Route("/evolution/deaths", name="evolution-deaths")
+     * Cumulative deaths per day
+     */
+    public function evolutionDeaths(EcdcParser $ecdcParser, EntityManagerInterface $em, Request $request, $minDeaths)
+    {
+        $this->maxCountries = $this->getParameter('app.graph_max_countries');
+        $minDeaths = $request->query->get('min') ?: $minDeaths;
+        $countryCodes = $this->getCountryCodes($request);
+        if (!$countryCodes || !count($countryCodes)) {
+            $countryCodes = $em->getRepository(Country::class)->getCountryCodesIfDeathRank($minDeaths, $this->maxCountries);
+        }
+        $cases = $em->getRepository(Cases::class)->findByCountries($countryCodes);
+        $serializer = new Serializer([new EvolutionNormalizer()]);
+        $data = $serializer->normalize($cases, null, ["min" => $minDeaths, "property" => "deaths"]);
+        $data["last_update"] = $em->getRepository(Config::class)->findOneByParam(Config::PARAM_LAST_UPDATE)->getValue();
+        return new JsonResponse($data);
     }
 
     /**
      * @Route("/countries", name="countries")
+     * Country list
      */
     public function countries(EcdcParser $ecdcParser, EntityManagerInterface $em, SerializerInterface $serializer)
     {
@@ -49,54 +77,21 @@ class ApiController extends AbstractController
         if ($request->query->get('countries')) {
             $countryCodes = json_decode($request->query->get('countries'));
             $countryCodes = array_slice($countryCodes, 0, $this->maxCountries);
-        } else {
-            return null;
+            return $countryCodes;
         }
-
-        return $countryCodes;
+        return null;
     }
 
     /**
-     * @Route("/evolution/cases", name="evolution-cases")
+     * @Route("/cases", name="cases")
+     * Basic API endpoint with new cases by day
+     * Not used
      */
-    public function evolutionCases(EcdcParser $ecdcParser, EntityManagerInterface $em, Request $request)
+    public function cases(EcdcParser $ecdcParser, EntityManagerInterface $em, SerializerInterface $serializer)
     {
-        $this->maxCountries = $this->getParameter('app.graph_max_countries');
-        $minCases = $request->query->get('min') ?: 100;
-        $countryCodes = $this->getCountryCodes($request);
-        if (!$countryCodes || !count($countryCodes)) {
-            $countries = $em->getRepository(Country::class)->findIfCaseRank($minCases, $this->maxCountries);
-            $countryCodes = [];
-            foreach ($countries as $country) {
-                $countryCodes[] = $country["code"];
-            }
-        }
-        $cases = $em->getRepository(Cases::class)->findByCountries($countryCodes);
-        $serializer = new Serializer([new EvolutionNormalizer()]);
-        $data = $serializer->normalize($cases, null, ["min" => $minCases, "property" => "cases"]);
-        $data["last_update"] = $em->getRepository(Config::class)->findOneByParam(Config::PARAM_LAST_UPDATE)->getValue();
-        return new JsonResponse($data);
-    }
+        $cases = $em->getRepository(Cases::class)->findAllByDate();
+        $data = $serializer->serialize($cases, 'json', ['groups' => 'api-cases']);
 
-    /**
-     * @Route("/evolution/deaths", name="evolution-deaths")
-     */
-    public function evolutionDeaths(EcdcParser $ecdcParser, EntityManagerInterface $em, Request $request)
-    {
-        $this->maxCountries = $this->getParameter('app.graph_max_countries');
-        $minDeaths = $request->query->get('min') ?: 100;
-        $countryCodes = $this->getCountryCodes($request);
-        if (!$countryCodes || !count($countryCodes)) {
-            $countries = $em->getRepository(Country::class)->findIfCaseRank($minDeaths, $this->maxCountries);
-            $countryCodes = [];
-            foreach ($countries as $country) {
-                $countryCodes[] = $country["code"];
-            }
-        }
-        $cases = $em->getRepository(Cases::class)->findByCountries($countryCodes);
-        $serializer = new Serializer([new EvolutionNormalizer()]);
-        $data = $serializer->normalize($cases, null, ["min" => $minDeaths, "property" => "deaths"]);
-        $data["last_update"] = $em->getRepository(Config::class)->findOneByParam(Config::PARAM_LAST_UPDATE)->getValue();
-        return new JsonResponse($data);
+        return JsonResponse::fromJsonString($data);
     }
 }

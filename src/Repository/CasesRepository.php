@@ -6,12 +6,6 @@ use App\Entity\Cases;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
-/**
- * @method Cases|null find($id, $lockMode = null, $lockVersion = null)
- * @method Cases|null findOneBy(array $criteria, array $orderBy = null)
- * @method Cases[]    findAll()
- * @method Cases[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- */
 class CasesRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -62,33 +56,4 @@ class CasesRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
-
-    // /**
-    //  * @return Cases[] Returns an array of Cases objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('d')
-            ->andWhere('d.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('d.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Cases
-    {
-        return $this->createQueryBuilder('d')
-            ->andWhere('d.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

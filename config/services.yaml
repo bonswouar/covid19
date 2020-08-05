@@ -5,6 +5,8 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     app.graph_max_countries: 20
+    app.min_cases: '%env(int:APP_MIN_CASES)%'
+    app.min_deaths: '%env(int:APP_MIN_DEATHS)%'
 
 services:
     # default configuration for services in *this* file
@@ -12,6 +14,9 @@ services:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
+        bind:
+            $minCases: '%app.min_cases%'
+            $minDeaths: '%app.min_deaths%'
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:

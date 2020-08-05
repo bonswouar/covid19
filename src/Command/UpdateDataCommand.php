@@ -83,9 +83,11 @@ class UpdateDataCommand extends Command
         $date->setTime(0, 0, 0);
         while (!$this->ecdcParser->getXlsx($date)) {
             $date->modify('-1 day');
+            $io->text("Trying ".$date->format('Y-m-d'));
         }
         if (!$this->shouldUpdate($input->getOption("force"), $input->getOption("clear"), $date)) {
             $io->text('Datas already updated with last available document ('.$date->format("d/m/Y").').');
+            $io->text("Use --force parameter to parse anyway");
             return 0;
         }
         $io->text("File saved.");

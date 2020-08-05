@@ -2,7 +2,7 @@
 
 ## WHAT
 
-This is just a quick project I made because I couldn't find any (free) vizualisation of the contamination trajectories.
+This is just a quick project I made because I couldn't find any (free) visualization of the contamination trajectories between countries.
 
 Totally inspired by "Country by country : How coronavirus cases trajectories compare" by the Financial Times.
 
@@ -17,20 +17,19 @@ Totally inspired by "Country by country : How coronavirus cases trajectories com
 
 ## INSTALLATION
 
-Like any PHP Symfony project. If you don't know, read the [docs](https://symfony.com/doc/current/index.html).
-
+Like most PHP Symfony project. If you don't know, read the [docs](https://symfony.com/doc/current/index.html).
+For example :
 ```
 composer install
 php bin/console doctrine:database:create
 php bin/console doctrine:migration:migrate
-[...]
 ```
 
-Don't forget to add your custom `.env.local` file for your database configuration.
+Don't forget to add your custom `.env.local` file for your local configuration.
 
 ## USAGE
 
-To refresh your database with online datas just use the command :
+To refresh your database with online data just use the command :
 ```
 php bin/console app:update-data
 ```
@@ -38,7 +37,7 @@ With optional parameters `--force` to force refresh even if already updated, and
 
 You can add this command to a CRON to update every day.
 
-## Visualization
+## VISUALIZATION
 
 For now I've just added one, you can try it from the base url of your webserver previously configured *(for example http://127.0.0.1:8080/)*
 
@@ -53,7 +52,7 @@ Should look like this :
 
 ![Screenshot_2020-03-26 Covid-19 Charts(1)](https://user-images.githubusercontent.com/615053/77681029-1026a600-6f95-11ea-82f5-c92ed84f3a5f.png)
 
-## TODO
+## TODO (or not)
 
 - [x] Clean code
 - [ ] More API endpoint examples
@@ -66,7 +65,7 @@ Feel free to create a new issue in case you find a bug/want to have a feature ad
 
 ## SOURCES
 
-Datas from ECDC, the European Centre for Disease Prevention and Control *(more accurate and consistent than World Health Organization's ones)*.
+Data from ECDC, the European Center for Disease Prevention and Control *(more accurate and consistent than World Health Organization's ones)*.
 
 You can find the XLSX file here : https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide
 
