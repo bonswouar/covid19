@@ -1,5 +1,8 @@
 # COVID-19 API & Chart
 
+## WARNING: ###
+### This project doesn't work anymore, since some data is missing. ECDC confirmed : "Unfortunately, the daily data is not available for the period between December 2020 and March 2021."
+
 ## WHAT
 
 This is just a quick project I made because I couldn't find any (free) visualization of the contamination trajectories between countries.
